@@ -1,26 +1,27 @@
 ﻿namespace TrackerLibrary
 {   /// <summary>
-    /// Represents a prize for particular place in the tournament.
+    /// Represents what the prize is for the given place.
     /// </summary>
     public class PrizeModel
     {
         /// <summary>
-        /// Represents which place number matches the prize.
+        /// The numeric identifier for the place.
         /// </summary>
         public int PlaceNumber { get; set; }
 
         /// <summary>
-        /// Represents name of place.
+        /// Represents name for the  place.
         /// </summary>
         public string PlaceName { get; set; }
 
         /// <summary>
-        /// Represents amount of prize for particular place.
+        /// The fixed amount this place earns.
         /// </summary>
         public decimal PrizeAmount { get; set; }
 
         /// <summary>
-        /// Represents percentage of prize for particular place.
+        /// The number that represents percentage of the overall take.
+        /// The percentage is a fraction of 1(so 0.5 for 50%).
         /// </summary>
         public double PrizePercentage { get; set; }
     }
