@@ -5,6 +5,10 @@
     public class PrizeModel
     {
         /// <summary>
+        /// The unique identifier for the prize.
+        /// </summary>
+        public int Id { get; set; }
+        /// <summary>
         /// The numeric identifier for the place.
         /// </summary>
         public int PlaceNumber { get; set; }
@@ -24,5 +28,20 @@
         /// The percentage is a fraction of 1(so 0.5 for 50%).
         /// </summary>
         public double PrizePercentage { get; set; }
+
+        public PrizeModel()
+        {
+
+        }
+        public PrizeModel(string placeNumber, string placeName, string prizeAmount, string prizePercentage)
+        {
+            int.TryParse(placeNumber, out int placeNumberValue);
+            PlaceNumber = placeNumberValue;
+            PlaceName = placeName;
+            decimal.TryParse(prizeAmount, out decimal prizeAmountValue);
+            PrizeAmount = prizeAmountValue;
+            double.TryParse(prizePercentage, out double prizePercentageValue);
+            PrizePercentage = prizePercentageValue;
+        }
     }
 }
