@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using TrackerLibrary;
+using TrackerLibrary.Models;
 
 namespace TrackerUI
 {
@@ -29,10 +30,9 @@ namespace TrackerUI
                     prizeAmountValue.Text,
                     prizePercentageValue.Text);
 
-                foreach (var connection in GlobalConfig.Connections)
-                {
-                    connection.CreatePrize(model);
-                }
+
+                    GlobalConfig.Connection.CreatePrize(model);
+
 
                 placeNumberValue.Text = "";
                 placeNameValue.Text = "";
