@@ -32,6 +32,8 @@ namespace TrackerUI
 
 
                     GlobalConfig.Connection.CreatePrize(model);
+                    
+                   
 
 
                 placeNumberValue.Text = "";

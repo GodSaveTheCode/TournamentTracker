@@ -11,14 +11,25 @@ namespace TrackerLibrary.DataAccess
 {
     public class TextConnector : IDataConnection
     {
-        //TODO - make CreatePrize() actually work for text file connection.
-
-        // получить данные из файла как List<string> перевести в List<PrizeModel>
-        // получить id последнего приза в файле, чтоб узнать какой id задать новому призу
-        // сохранить PrizeModel как List<string> в текстовый файл
+        
         public const string PrizesFile = "Prizes.txt";
+        public const string PeopleFile = "People.txt";
 
-       
+
+        public PersonModel CreatePerson(PersonModel model)
+        {
+            List<PersonModel> people = PeopleFile.GetFullPath().LoadFile().ConvertToPersonModels();
+            int newId = 1;
+            if (people.Count > 0)
+            {
+                newId = people.OrderByDescending(person => person.Id).First().Id;
+            }
+
+            model.Id = newId;
+            people.Add(model);
+            people.SaveToPeopleFile(PeopleFile.GetFullPath());
+            return model;
+        }
 
         public PrizeModel CreatePrize(PrizeModel model)
         {
@@ -27,7 +38,7 @@ namespace TrackerLibrary.DataAccess
             int newId = 1;
             if (prizes.Count > 0)
             {
-                newId = prizes.OrderByDescending(p => p.Id).First().Id + 1;
+                newId = prizes.OrderByDescending(prize => prize.Id).First().Id + 1;
             }
             model.Id = newId;
             prizes.Add(model);

@@ -5,6 +5,11 @@
     public class PersonModel
     {
         /// <summary>
+        /// Unique identifier of the person.
+        /// </summary>
+        public int Id { get; set; }
+
+        /// <summary>
         /// First name of the person.
         /// </summary>
         public string FirstName { get; set; }
