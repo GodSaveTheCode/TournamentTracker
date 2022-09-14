@@ -28,5 +28,10 @@
         /// Phone number of the person.
         /// </summary>
         public string CellphoneNumber { get; set; }
+
+        /// <summary>
+        /// Person's full name.
+        /// </summary>
+        public string FullName { get { return $"{FirstName} {LastName}"; } }
     }
 }
