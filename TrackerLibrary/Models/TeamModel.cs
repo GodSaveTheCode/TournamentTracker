@@ -24,5 +24,6 @@ namespace TrackerLibrary.Models
         /// Name of the team.
         /// </summary>
         public string TeamName { get; set; }
+
     }
 }
