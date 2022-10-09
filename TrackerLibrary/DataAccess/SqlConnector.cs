@@ -104,5 +104,54 @@ namespace TrackerLibrary.DataAccess
             }
             return output;
         }
+
+        public void CreateTournament(TournamentModel model)
+        {
+            using (IDbConnection connection = new System.Data.SqlClient.SqlConnection(GlobalConfig.GetConnectionString(db)))
+            {
+                SaveTournament(model, connection);
+                SaveTournamentPrizes(model, connection);
+                SaveTournamentEntries(model, connection);
+
+            }
+        }
+
+        public void SaveTournament(TournamentModel model, IDbConnection connection)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@TournamentName", model.TournamentName);
+            parameters.Add("@EntryFee", model.EntryFee);
+            parameters.Add("@id", 0, dbType: DbType.Int32, direction: ParameterDirection.Output);
+
+            connection.Execute("dbo.spTournaments_Insert", parameters, commandType: CommandType.StoredProcedure);
+
+            model.Id = parameters.Get<int>("@id");
+        }
+
+        public void SaveTournamentPrizes(TournamentModel model, IDbConnection connection)
+        {
+            foreach (PrizeModel prize in model.Prizes)
+            {
+                var parameters = new DynamicParameters();
+                parameters.Add("@TournamentId", model.Id);
+                parameters.Add("@PrizeId", prize.Id);
+                parameters.Add("@id", 0, dbType: DbType.Int32, direction: ParameterDirection.Output);
+
+                connection.Execute("dbo.spTournamentPrizes_Insert", parameters, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public void SaveTournamentEntries(TournamentModel model, IDbConnection connection)
+        {
+            foreach (TeamModel team in model.EnteredTeams)
+            {
+                var parameters = new DynamicParameters();
+                parameters.Add("@TournamentId", model.Id);
+                parameters.Add("@TeamId", team.Id);
+                parameters.Add("@id", 0, dbType: DbType.Int32, direction: ParameterDirection.Output);
+
+                connection.Execute("dbo.spTournamentEntries_Insert", parameters, commandType: CommandType.StoredProcedure);
+            }
+        }
     }
 }
