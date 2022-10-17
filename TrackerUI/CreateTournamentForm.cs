@@ -118,6 +118,8 @@ namespace TrackerUI
             model.EnteredTeams = selectedTeams;
             model.Prizes = selectedPrizes;
 
+            TournamentLogic.CreateRounds(model);
+
             GlobalConfig.Connection.CreateTournament(model);
         }
     }
