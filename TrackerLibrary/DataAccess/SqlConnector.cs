@@ -112,11 +112,59 @@ namespace TrackerLibrary.DataAccess
                 SaveTournament(model, connection);
                 SaveTournamentPrizes(model, connection);
                 SaveTournamentEntries(model, connection);
-
+                SaveTournamentRounds(model, connection);
             }
         }
 
-        public void SaveTournament(TournamentModel model, IDbConnection connection)
+        private void SaveTournamentRounds(TournamentModel model, IDbConnection connection)
+        {
+            foreach (List<MatchupModel> round in model.Rounds)
+            {
+                foreach (MatchupModel match in round)
+                {
+                    var parameters = new DynamicParameters();
+                    parameters.Add("@TournamentId", model.Id);
+                    parameters.Add("@MatchupRound", match.MatchupRound);
+                    parameters.Add("@id", 0, dbType: DbType.Int32, direction: ParameterDirection.Output);
+
+                    connection.Execute("dbo.spMatchups_Insert", parameters, commandType: CommandType.StoredProcedure);
+
+                    match.Id = parameters.Get<int>("@id");
+
+                    foreach (MatchupEntryModel entry in match.Entries) 
+                    {
+                        parameters = new DynamicParameters();
+
+                        parameters.Add("@MatchupId", match.Id);
+                        if (entry.ParentMatchup == null)
+                        {
+                            parameters.Add("@ParentMatchId", null);
+                        }
+                        else
+                        {
+                            parameters.Add("@ParentMatchId", entry.ParentMatchup.Id);
+                        }
+
+                        if (entry.TeamCompeting == null)
+                        {
+                            parameters.Add("@TeamCompeting", null);
+                        }
+                        else
+                        {
+                            parameters.Add("@TeamCompeting", entry.TeamCompeting.Id);
+                        }
+        
+                        parameters.Add("@id", 0, dbType: DbType.Int32, direction: ParameterDirection.Output);
+
+                        connection.Execute("dbo.spMatchupEntries_Insert", parameters, commandType: CommandType.StoredProcedure);
+                    }
+                }
+            }
+               
+
+        }
+
+        private void SaveTournament(TournamentModel model, IDbConnection connection) //private?
         {
             var parameters = new DynamicParameters();
             parameters.Add("@TournamentName", model.TournamentName);
@@ -128,7 +176,7 @@ namespace TrackerLibrary.DataAccess
             model.Id = parameters.Get<int>("@id");
         }
 
-        public void SaveTournamentPrizes(TournamentModel model, IDbConnection connection)
+        private void SaveTournamentPrizes(TournamentModel model, IDbConnection connection)
         {
             foreach (PrizeModel prize in model.Prizes)
             {
@@ -141,7 +189,7 @@ namespace TrackerLibrary.DataAccess
             }
         }
 
-        public void SaveTournamentEntries(TournamentModel model, IDbConnection connection)
+        private void SaveTournamentEntries(TournamentModel model, IDbConnection connection)
         {
             foreach (TeamModel team in model.EnteredTeams)
             {
