@@ -15,6 +15,11 @@
         public TeamModel TeamCompeting { get; set; }
 
         /// <summary>
+        /// The ID from the database that will be used to identify competing team.
+        /// </summary>
+        public int TeamCompetingId { get; set; }
+
+        /// <summary>
         /// Represents the score of this particular team.
         /// </summary>
         public double Score { get; set; }
@@ -24,5 +29,9 @@
         /// </summary>
         public MatchupModel ParentMatchup { get; set; }
 
+        /// <summary>
+        /// The ID from the database that will be used to identify parent matchup.
+        /// </summary>
+        public int ParentMatchId { get; set; }
     }
 }
