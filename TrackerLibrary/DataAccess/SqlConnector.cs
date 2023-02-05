@@ -270,5 +270,32 @@ namespace TrackerLibrary.DataAccess
             }
             return output;
         }
+
+        public void UpdateMatchup(MatchupModel matchup) 
+        {
+            using (IDbConnection connection = new System.Data.SqlClient.SqlConnection(GlobalConfig.GetConnectionString(db)))
+            {
+                var parameters = new DynamicParameters();
+                if (matchup.Winner != null)
+                {
+                    parameters.Add("@id", matchup.Id);
+                    parameters.Add("@WinnerId", matchup.Winner.Id);
+                    connection.Execute("dbo.spMatchup_Update", parameters, commandType: CommandType.StoredProcedure);
+                }
+
+                foreach (MatchupEntryModel entry in matchup.Entries)
+                {
+                    if (entry.TeamCompeting != null)
+                    {
+                        parameters = new DynamicParameters();
+                        parameters.Add("@id", entry.Id);
+                        parameters.Add("@TeamCompetingId", entry.TeamCompeting.Id);
+                        parameters.Add("@Score", entry.Score);
+                        connection.Execute("dbo.spMatchupEntry_Update", parameters, commandType: CommandType.StoredProcedure); 
+                    }
+                }
+
+            }
+        }
     }
 }
