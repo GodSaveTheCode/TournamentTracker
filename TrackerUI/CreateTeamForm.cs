@@ -49,7 +49,7 @@ namespace TrackerUI
                     CellphoneNumber = cellphoneValue.Text
                 };
 
-                person = GlobalConfig.Connection.CreatePerson(person);
+                GlobalConfig.Connection.CreatePerson(person);
 
                 firstNameValue.Text = "";
                 lastNameValue.Text = "";

@@ -12,7 +12,7 @@ namespace TrackerLibrary.DataAccess
     public class SqlConnector : IDataConnection
     {
         private const string db = "Tournaments";
-        public PrizeModel CreatePrize(PrizeModel model)
+        public void CreatePrize(PrizeModel model)
         {
             using (IDbConnection connection = new System.Data.SqlClient.SqlConnection(GlobalConfig.GetConnectionString(db)))
             {
@@ -26,14 +26,12 @@ namespace TrackerLibrary.DataAccess
                 connection.Execute("dbo.spPrizes_Insert", parameters, commandType: CommandType.StoredProcedure);
 
                 model.Id = parameters.Get<int>("@id");
-
-                return model;
             }
         }
 
 
 
-        public PersonModel CreatePerson(PersonModel model)
+        public void CreatePerson(PersonModel model)
         {
             using (IDbConnection connection = new System.Data.SqlClient.SqlConnection(GlobalConfig.GetConnectionString(db)))
             {
@@ -48,7 +46,6 @@ namespace TrackerLibrary.DataAccess
 
                 model.Id = parameters.Get<int>("@id");
 
-                return model;
             }
         }
 
@@ -62,7 +59,7 @@ namespace TrackerLibrary.DataAccess
             return output;
         }
 
-        public TeamModel CreateTeam(TeamModel model)
+        public void CreateTeam(TeamModel model)
         {
             using (IDbConnection connection = new System.Data.SqlClient.SqlConnection(GlobalConfig.GetConnectionString(db)))
             {
@@ -82,7 +79,6 @@ namespace TrackerLibrary.DataAccess
                     connection.Execute("dbo.spTeamMembers_Insert", parameters, commandType: CommandType.StoredProcedure);
                 }
                 
-                return model;
             }
         }
 
@@ -113,6 +109,7 @@ namespace TrackerLibrary.DataAccess
                 SaveTournamentPrizes(model, connection);
                 SaveTournamentEntries(model, connection);
                 SaveTournamentRounds(model, connection);
+                TournamentLogic.UpdateTournamentResults(model);
             }
         }
 

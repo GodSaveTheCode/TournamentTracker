@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +17,98 @@ namespace TrackerLibrary
             int byes = FindNumberOfByes(model.EnteredTeams.Count(), rounds);
             model.Rounds.Add(CreateFirstRound(randomizedTeams, byes));
             CreateOtherRounds(model, rounds);
+        }
+
+        public static void UpdateTournamentResults(TournamentModel tournament)
+        {
+            List<MatchupModel> toScore = new List<MatchupModel>();
+
+            foreach (List<MatchupModel> round in tournament.Rounds)
+            {
+                foreach (MatchupModel m in round)
+                {
+                    if (m.Winner == null && (m.Entries.Any(entry => entry.Score != 0) || m.Entries.Count == 1))
+                    {
+                        toScore.Add(m);
+                    }
+                }
+            }
+
+            MarkWinnerInMatchups(toScore);
+
+            AdvanceWinners(toScore, tournament);
+
+            toScore.ForEach(matchup => GlobalConfig.Connection.UpdateMatchup(matchup));
+
+        }
+
+        private static void AdvanceWinners(List<MatchupModel> matchups, TournamentModel tournament)
+        {
+            foreach (MatchupModel matchup in matchups)
+            {
+                foreach (List<MatchupModel> round in tournament.Rounds)
+                {
+                    foreach (MatchupModel m in round) 
+                    {
+                        foreach (MatchupEntryModel me in m.Entries)
+                        {
+                            if (me.ParentMatchup != null && (me.ParentMatchup.Id == matchup.Id))
+                            {
+                                me.TeamCompeting = matchup.Winner;
+                                GlobalConfig.Connection.UpdateMatchup(m);
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+
+        private static void MarkWinnerInMatchups(List<MatchupModel> matchups)
+        {
+            string greaterWins = $"{ ConfigurationManager.AppSettings["greaterWins"] }";
+
+            foreach (MatchupModel matchup in matchups)
+            {
+                if (matchup.Entries.Count == 1)
+                {
+                    matchup.Winner = matchup.Entries[0].TeamCompeting;
+                    continue;
+                }
+
+                // 0 means false, or low score wins
+                if (greaterWins == "0")
+                {
+                    if (matchup.Entries[0].Score < matchup.Entries[1].Score)
+                    {
+                        matchup.Winner = matchup.Entries[0].TeamCompeting;
+                    }
+                    else if(matchup.Entries[1].Score < matchup.Entries[0].Score)
+                    {
+                        matchup.Winner = matchup.Entries[1].TeamCompeting;
+                    }
+                    else
+                    {
+                        throw new Exception("We do not allow ties int this application.");
+                    }
+                }
+                else
+                {
+                    // 1 means true, or high score wins
+                    if (matchup.Entries[0].Score > matchup.Entries[1].Score)
+                    {
+                        matchup.Winner = matchup.Entries[0].TeamCompeting;
+                    }
+                    else if (matchup.Entries[1].Score > matchup.Entries[0].Score)
+                    {
+                        matchup.Winner = matchup.Entries[1].TeamCompeting;
+                    }
+                    else
+                    {
+                        throw new Exception("We do not allow ties int this application.");
+                    }
+                } 
+            }
         }
 
         private static List<TeamModel> RandomizeTeamList(List<TeamModel> teams) 
