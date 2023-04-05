@@ -27,7 +27,7 @@ namespace TrackerLibrary
             {
                 foreach (MatchupModel m in round)
                 {
-                    if (m.Winner == null && (m.Entries.Any(entry => entry.Score != 0) || m.Entries.Count == 1))
+                    if (m.Entries.Any(entry => entry.Score != 0) || m.Entries.Count == 1)
                     {
                         toScore.Add(m);
                     }
